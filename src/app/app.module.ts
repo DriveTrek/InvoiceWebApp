@@ -15,6 +15,7 @@ import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 registerLocaleData(en);
 
@@ -31,7 +32,8 @@ registerLocaleData(en);
     IconsProviderModule,
     NzLayoutModule,
     NzMenuModule,
-    NzDropDownModule
+    NzDropDownModule,
+    NgbModule
   ],
   providers: [
     { provide: NZ_I18N, useValue: en_US, },
