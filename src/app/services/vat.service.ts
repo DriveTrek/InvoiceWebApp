@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment'; // Import the environment
+import { GuidIDWrapperDto } from '../models/guid_id_wrapper';
 
 @Injectable({ providedIn: 'root' })
 export class VatService {
@@ -16,29 +17,28 @@ export class VatService {
     sortOrder: string | null,
     filters: Array<{ key: string; value: string[] }>
   ): Observable<any> {
-    let params = new HttpParams()
-      .set('pageNumber', `${pageNumber}`)
-      .set('pageSize', `${pageSize}`)
-      .set('sortField', sortField || '')
-      .set('sortOrder', sortOrder || '');
-
-    filters.forEach((filter) => {
-      filter.value.forEach((value) => {
-        params = params.append(filter.key, value);
-      });
-    });
+    const requestBody = {
+      pageNumber,
+      pageSize,
+      sortField: sortField || '',
+      sortOrder: sortOrder || '',
+      filters: filters.map(filter => ({
+        key: filter.key,
+        value: filter.value
+      }))
+    };
 
     return this.http
-      .get<any>(this.apiUrl, { params })
+      .post<any>(`${this.apiUrl}/getvat`, requestBody)
       .pipe(catchError(() => of([])));
   }
 
   addVat(vat: any): Observable<void> {
-    return this.http.post<void>(this.apiUrl, vat);
+    return this.http.post<void>(`${this.apiUrl}/createvat`, vat);
   }
 
   updateVat(vatId: string, vat: any): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${vatId}`, vat);
+    return this.http.post<void>(`${this.apiUrl}/updatevat`, vat);
   }
 
   getVatById(vatId: string): Observable<any> {
@@ -46,6 +46,7 @@ export class VatService {
   }
 
   deleteVat(vatId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${vatId}`);
+    const request = new GuidIDWrapperDto(vatId);
+    return this.http.post<void>(`${this.apiUrl}/getvatbyid`, request);
   }
 }

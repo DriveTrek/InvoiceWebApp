@@ -2,12 +2,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment'; // Import the environment
+import { GuidIDWrapperDto } from '../models/guid_id_wrapper';
 
 @Injectable({ providedIn: 'root' })
 export class CustomerService {
   private apiUrl = environment.apiUrl + 'customers'; // Use the environment variable
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getCustomers(
     pageNumber: number,
@@ -17,39 +18,39 @@ export class CustomerService {
     filters: Array<{ key: string; value: string[] }>,
     searchTerm: string | null
   ): Observable<any> {
-    let params = new HttpParams()
-      .set('pageNumber', `${pageNumber}`)
-      .set('pageSize', `${pageSize}`)
-      .set('sortField', sortField || '')
-      .set('sortOrder', sortOrder || '');
-      if (searchTerm) {
-        params = params.set('searchTerm', searchTerm);
-      }
-    filters.forEach((filter) => {
-      filter.value.forEach((value) => {
-        params = params.append(filter.key, value);
-      });
-    });
+    const requestBody = {
+      pageNumber,
+      pageSize,
+      sortField: sortField || '',
+      sortOrder: sortOrder || '',
+      searchTerm: searchTerm || '',
+      filters: filters.map(filter => ({
+        key: filter.key,
+        value: filter.value
+      }))
+    };
 
     return this.http
-      .get<any>(this.apiUrl, { params })
+      .post<any>(`${this.apiUrl}/getcustomers`, requestBody)
       .pipe(catchError(() => of([])));
   }
 
   addCustomer(customer: any): Observable<void> {
-    return this.http.post<void>(this.apiUrl, customer);
+    return this.http.post<void>(`${this.apiUrl}/createcustomer`, customer);
   }
 
   updateCustomer(customerId: string, customer: any): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${customerId}`, customer);
+    return this.http.put<void>(`${this.apiUrl}/updatecustomer`, customer);
   }
 
   getCustomerById(customerId: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${customerId}`);
+    const request = new GuidIDWrapperDto(customerId);
+    return this.http.post<any>(`${this.apiUrl}/getcustomerbyId`, { request });
   }
 
   deleteCustomer(customerId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${customerId}`);
+    const request = new GuidIDWrapperDto(customerId);
+    return this.http.post<any>(`${this.apiUrl}/deletecustomer`, { request });
   }
-  
+
 }

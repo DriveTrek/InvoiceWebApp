@@ -9,9 +9,9 @@ import { environment } from '../../environments/environment'; // Ensure environm
 export class RoleService {
   private apiUrl = environment.apiUrl + 'roles'; // Update the API endpoint as needed
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getRoles(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+    return this.http.post<any[]>(`${this.apiUrl}/getroles`, {});
   }
 }

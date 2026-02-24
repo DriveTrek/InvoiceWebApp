@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { jwtDecode } from 'jwt-decode';
+import { IApiResponse } from '../models/apiresponse';
+import { ILoginResponse } from '../models/loginresponse';
 
 @Injectable({
   providedIn: 'root',
@@ -15,18 +17,19 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  login(username: string, password: string): Observable<any> {
-    return this.http
-      .post<any>(`${this.apiUrl}/login`, { username, password })
-      .pipe(
-        tap((response) => {
-          if (response && response.token) {
-            localStorage.setItem('token', response.token);
-            this.userInfoUpdated.emit();
-          }
-        })
-      );
-  }
+  login(username: string, password: string): Observable<IApiResponse<ILoginResponse>> {
+  return this.http
+    .post<IApiResponse<ILoginResponse>>(`${this.apiUrl}/login`, { username, password })
+    .pipe(
+      tap((response) => {
+        if (response && response.ResponseObject && response.ResponseObject.token) {
+          localStorage.setItem('token', response.ResponseObject.token);
+          this.userInfoUpdated.emit();
+        }
+      })
+    );
+}
+
 
   logout(): void {
     localStorage.removeItem('token');

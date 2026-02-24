@@ -24,6 +24,13 @@
     </nz-form-control>
   </nz-form-item>
 
+   <nz-form-item>
+      <nz-form-label [nzSpan]="7" nzFor="effectiveDate">Effective Date</nz-form-label>
+      <nz-form-control [nzSpan]="12">
+        <nz-date-picker formControlName="effectiveDate"></nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+
   <nz-form-item>
     <nz-form-control [nzOffset]="7" [nzSpan]="12">
       <button nz-button nzType="primary" [disabled]="!addVatForm.valid"><span nz-icon nzType="plus"></span>Create</button>

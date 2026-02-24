@@ -20,6 +20,7 @@ export class VatAddComponent {
   ) {
     this.addVatForm = this.fb.group({
       percentage: new FormControl<number | null>(null, [Validators.required, Validators.min(0), Validators.max(100)]), // Percentage field
+      effectiveDate: new FormControl<Date | null>( null, [Validators.required] )
     });
   }
 
